@@ -11,8 +11,12 @@
       background-color: skyblue;
     }
 
+    .Timer-CountWrappper {
+      display: flex;
+      align-items: center;
+    }
+
     .Timer {
-      height: 100vh;
       display: flex;
       display: -webkit-flex;
       flex-direction: column;
@@ -28,6 +32,7 @@
       display: -webkit-flex;
       align-items: center;
       justify-content: center;
+      flex-direction: column;
     }
 
     .Timer-TopWrapper {
@@ -93,22 +98,29 @@
 </head>
 <body>
   <div class="TimerWrapper">
-    <div class ="Timer">
-      <div class="Timer-TopWrapper">
-        <button id ="lab" class="Timer-TopWrapper-LAB" onclick="saveRecordLog();">LAB</button>
-        <button id ="startStop" class="Timer-TopWrapper-StartStop" onclick="clickStartStop();">Start/Stop</button>
-        <button class="Timer-TopWrapper-Reset" onclick="resetTimer();">Reset</button>
+    <div class="Timer-CountWrappper">
+      <div class ="Timer">
+        <div class="Timer-TopWrapper">
+          <button id ="lab" class="Timer-TopWrapper-LAB" onclick="saveRecordLog();">LAB</button>
+          <button id ="startStop" class="Timer-TopWrapper-StartStop" onclick="clickStartStop();">Start/Stop</button>
+          <button class="Timer-TopWrapper-Reset" onclick="resetTimer();">Reset</button>
+        </div>
+
+        <div class="Timer-BodyWrapper">
+          <div id ="currentTimer">00:00:00</div>
+        </div>
       </div>
 
-      <div class="Timer-BodyWrapper">
-        <div id ="currentTimer">00:00:00</div>
+      <div class ="Timer-Record">
+        <ul id ="recordList" class ="Timer-Record-List">
+
+        </ul>
       </div>
     </div>
 
-    <div class ="Timer-Record">
-      <ul id ="recordList" class ="Timer-Record-List">
-
-      </ul>
+    <div>
+      <div id ="maxRecord"></div>
+      <div id ="averageRecord"></div>
     </div>
   </div>
 
@@ -118,6 +130,9 @@
     const lab = document.getElementById('lab');
     const recordList = document.getElementById('recordList');
 
+    const maxRecord = document.getElementById('maxRecord');
+    const averageRecord = document.getElementById('averageRecord');
+
     let logIndex = 0;
     let isStart = false;
     let minutes = 0;
@@ -126,12 +141,15 @@
     let count = 0;
 
     const resetTimer = () => {
+      while (recordList.firstChild) {
+        recordList.removeChild(recordList.firstChild);
+      }
+
       minutes = 0;
       seconds = 0;
       milliSeconds = 0;
       logIndex = 0;
 
-      recordList.innerHTML = '';
       currentTimer.innerHTML = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}:${milliSeconds < 10 ? '0' + milliSeconds : milliSeconds}`;
     }
 
@@ -141,10 +159,38 @@
       }
 
       logIndex++;
-      const logContent = `${logIndex}. ${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}:${milliSeconds < 10 ? '0' + milliSeconds : milliSeconds}`;
+      const logContent = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}:${milliSeconds < 10 ? '0' + milliSeconds : milliSeconds}`;
       const liTag = document.createElement('li');
       liTag.append(logContent);
+      liTag.setAttribute('id', logIndex);
       recordList.append(liTag);
+
+      calculateRecord();
+    }
+
+    const calculateRecord = () => {
+      let averageMinute = 0;
+      let averageSecond = 0;
+      let averageMilliSecond = 0;
+
+      const childLength = recordList.children.length;
+      const splitMaxTime = recordList.children[childLength - 1].innerHTML.split(":");
+
+      for (let i = 0; i < childLength; i++) {
+        // 0번째: 분, 1번째: 초, 2번째: 밀리세컨드
+        const splitTime = recordList.children[i].innerHTML.split(":");
+        
+        averageMinute += Number(splitTime[0]);
+        averageSecond += Number(splitTime[1]);
+        averageMilliSecond += Number(splitTime[2]);
+      }
+
+      averageMinute = Math.floor(averageMinute / childLength);
+      averageSecond = Math.floor(averageSecond / childLength);
+      averageMilliSecond = Math.floor(averageMilliSecond / childLength);
+
+      averageRecord.innerHTML = `평균 시간: ${averageMinute}분 ${averageSecond}초 ${averageMilliSecond} 밀리세컨드`;
+      maxRecord.innerHTML = `가장 큰시간: ${splitMaxTime[0]}분 ${splitMaxTime[1]}초 ${splitMaxTime[2]} 밀리세컨드`;
     }
     
     const clickStartStop = () => {
