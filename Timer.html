@@ -3,16 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap" rel="stylesheet" />
   <title>Timer</title>
 
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Noto Sans' !important;
+    }
+
     body {
       overflow: hidden;
       background-color: skyblue;
     }
 
-    .Timer-CountWrappper {
+    .Timer-CountWrapper {
       display: flex;
+      display: -webkit-flex;
+      justify-content: center;
       align-items: center;
     }
 
@@ -26,13 +36,16 @@
     }
 
     .TimerWrapper {
-      width: 100%;
       height: 100vh;
       display: flex;
       display: -webkit-flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
+    }
+
+    .TimerWrapper-Contents {
+      width: 1000px;
     }
 
     .Timer-TopWrapper {
@@ -84,42 +97,54 @@
       background-color: blue;
       border-radius: 10px;
       width: 400px;
-      height: 500px;
+      height: 600px;
       overflow-x: hidden;
       overflow-y: auto;
     }
 
     li {
       list-style: none;
-      margin: 10px 0;
+      margin: 10px 5px;
       font-size: 18px;
+    }
+
+    .RecordWrapper {
+      margin-top: 10px;
+      background-color: blue;
+      width: 100%;
+      color: white;
+      font-size: 20px;
+      padding: 10px;
     }
   </style>
 </head>
 <body>
   <div class="TimerWrapper">
-    <div class="Timer-CountWrappper">
-      <div class ="Timer">
-        <div class="Timer-TopWrapper">
-          <button id ="lab" class="Timer-TopWrapper-LAB" onclick="saveRecordLog();">LAB</button>
-          <button id ="startStop" class="Timer-TopWrapper-StartStop" onclick="clickStartStop();">Start/Stop</button>
+    <div class ="TimerWrapper-Contents">
+      <div class="Timer-CountWrapper">
+        <div class ="Timer">
+          <div class="Timer-TopWrapper">
+            <button id ="lab" class="Timer-TopWrapper-LAB" onclick="saveRecordLog();">LAB</button>
+            <button id ="startStop" class="Timer-TopWrapper-StartStop" onclick="clickStartStop();">Start/Stop</button>
+          </div>
+
+          <div class="Timer-BodyWrapper">
+            <div id ="currentTimer">00:00:00</div>
+          </div>
         </div>
 
-        <div class="Timer-BodyWrapper">
-          <div id ="currentTimer">00:00:00</div>
+        <div class ="Timer-Record">
+          <ul id ="recordList" class ="Timer-Record-List">
+
+          </ul>
         </div>
       </div>
 
-      <div class ="Timer-Record">
-        <ul id ="recordList" class ="Timer-Record-List">
-
-        </ul>
+      <div class="RecordWrapper">
+        <div id ="minRecord">최솟값이 여기에 표시됩니다.</div>
+        <div id ="maxRecord">최댓값이 여기에 표시됩니다.</div>
+        <div id ="averageRecord">평균값이 여기에 표시됩니다.</div>
       </div>
-    </div>
-
-    <div>
-      <div id ="maxRecord"></div>
-      <div id ="averageRecord"></div>
     </div>
   </div>
 
@@ -129,6 +154,7 @@
     const lab = document.getElementById('lab');
     const recordList = document.getElementById('recordList');
 
+    const minRecord = document.getElementById('minRecord');
     const maxRecord = document.getElementById('maxRecord');
     const averageRecord = document.getElementById('averageRecord');
 
@@ -185,6 +211,7 @@
 
     const resetRecordText = () => {
       averageRecord.innerHTML = '';
+      minRecord.innerHTML = '';
       maxRecord.innerHTML = '';
     }
 
@@ -194,6 +221,7 @@
       let averageMilliSecond = 0;
 
       const childLength = recordList.children.length;
+      const splitMinTime = recordList.children[0].innerHTML.split(":");
       const splitMaxTime = recordList.children[childLength - 1].innerHTML.split(":");
 
       for (let i = 0; i < childLength; i++) {
@@ -209,8 +237,9 @@
       averageSecond = Math.floor(averageSecond / childLength);
       averageMilliSecond = Math.floor(averageMilliSecond / childLength);
 
-      averageRecord.innerHTML = `평균 시간: ${averageMinute}분 ${averageSecond}초 ${averageMilliSecond} 밀리세컨드`;
+      minRecord.innerHTML = `가장 적은 시간: ${splitMinTime[0]}분 ${splitMinTime[1]}초 ${splitMinTime[2]} 밀리세컨드`;
       maxRecord.innerHTML = `가장 큰시간: ${splitMaxTime[0]}분 ${splitMaxTime[1]}초 ${splitMaxTime[2]} 밀리세컨드`;
+      averageRecord.innerHTML = `평균 시간: ${averageMinute}분 ${averageSecond}초 ${averageMilliSecond} 밀리세컨드`;
     }
     
     const clickStartStop = () => {
