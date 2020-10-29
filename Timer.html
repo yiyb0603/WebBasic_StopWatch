@@ -167,8 +167,6 @@
       liTag.append(logContent);
       liTag.setAttribute('id', logIndex);
       recordList.append(liTag);
-
-      calculateRecord();
     }
 
     const resetTimer = () => {
@@ -182,6 +180,12 @@
       logIndex = 0;
 
       currentTimer.innerHTML = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}:${milliSeconds < 10 ? '0' + milliSeconds : milliSeconds}`;
+      resetRecordText();
+    }
+
+    const resetRecordText = () => {
+      averageRecord.innerHTML = '';
+      maxRecord.innerHTML = '';
     }
 
     const calculateRecord = () => {
@@ -213,22 +217,29 @@
       isStart = !isStart;
       count++;
 
-      const interval = setInterval(() => {
-        if (isStart) {
-          milliSeconds++;
+      if (!isStart) {
+        calculateRecord();
+      }
 
-          if (milliSeconds >= 100) {
-            seconds++;
-            milliSeconds = 0;
+      else {
+        resetRecordText();
+        const interval = setInterval(() => {
+          if (isStart) {
+            milliSeconds++;
 
-            if (seconds >= 60) {
-              seconds = 0;
-              minutes++;
+            if (milliSeconds >= 100) {
+              seconds++;
+              milliSeconds = 0;
+
+              if (seconds >= 60) {
+                seconds = 0;
+                minutes++;
+              }
             }
+            currentTimer.innerHTML = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}:${milliSeconds < 10 ? '0' + milliSeconds : milliSeconds}`;
           }
-          currentTimer.innerHTML = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}:${milliSeconds < 10 ? '0' + milliSeconds : milliSeconds}`;
-        }
-      }, count < 2 ? 10 : 1000);
+        }, count < 2 ? 10 : 1000);
+      }
     };
   </script>
 </body>
