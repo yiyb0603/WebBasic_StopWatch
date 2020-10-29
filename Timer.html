@@ -103,7 +103,6 @@
         <div class="Timer-TopWrapper">
           <button id ="lab" class="Timer-TopWrapper-LAB" onclick="saveRecordLog();">LAB</button>
           <button id ="startStop" class="Timer-TopWrapper-StartStop" onclick="clickStartStop();">Start/Stop</button>
-          <button class="Timer-TopWrapper-Reset" onclick="resetTimer();">Reset</button>
         </div>
 
         <div class="Timer-BodyWrapper">
@@ -133,12 +132,44 @@
     const maxRecord = document.getElementById('maxRecord');
     const averageRecord = document.getElementById('averageRecord');
 
+    document.addEventListener('keydown', (e) => {
+      // 1번키 눌렀을때
+      if (e.key === "1") {
+        clickStartStop();
+      }
+
+      // 2번키 눌렀을때
+      else if (e.key === "2") {
+        saveRecordLog();
+      }
+    }, true);
+
     let logIndex = 0;
     let isStart = false;
     let minutes = 0;
     let seconds = 0;
     let milliSeconds = 0;
     let count = 0;
+
+    const saveRecordLog = () => {
+      if (!minutes && !seconds && !milliSeconds) {
+        return;
+      }
+
+      if (!isStart) {
+        resetTimer();
+        return;
+      }
+
+      logIndex++;
+      const logContent = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}:${milliSeconds < 10 ? '0' + milliSeconds : milliSeconds}`;
+      const liTag = document.createElement('li');
+      liTag.append(logContent);
+      liTag.setAttribute('id', logIndex);
+      recordList.append(liTag);
+
+      calculateRecord();
+    }
 
     const resetTimer = () => {
       while (recordList.firstChild) {
@@ -151,21 +182,6 @@
       logIndex = 0;
 
       currentTimer.innerHTML = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}:${milliSeconds < 10 ? '0' + milliSeconds : milliSeconds}`;
-    }
-
-    const saveRecordLog = () => {
-      if (!minutes && !seconds && !milliSeconds) {
-        return;
-      }
-
-      logIndex++;
-      const logContent = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}:${milliSeconds < 10 ? '0' + milliSeconds : milliSeconds}`;
-      const liTag = document.createElement('li');
-      liTag.append(logContent);
-      liTag.setAttribute('id', logIndex);
-      recordList.append(liTag);
-
-      calculateRecord();
     }
 
     const calculateRecord = () => {
