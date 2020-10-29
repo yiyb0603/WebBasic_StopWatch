@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timer</title>
+
+  <style>
+    body {
+      overflow: hidden;
+      background-color: skyblue;
+    }
+
+    .Timer {
+      height: 100vh;
+      display: flex;
+      display: -webkit-flex;
+      flex-direction: column;
+      -ms-flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .TimerWrapper {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      display: -webkit-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .Timer-TopWrapper {
+      display: flex;
+      display: -webkit-flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .Timer-TopWrapper > * {
+      margin-right: 5px;
+      border: none;
+      outline: none;
+      color: white;
+      padding: 10px 0;
+      font-size: 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 150px;
+    }
+
+    .Timer-TopWrapper-LAB {
+      background-color: greenyellow;
+    }
+
+    .Timer-TopWrapper-StartStop {
+      background-color: red;
+    }
+
+    .Timer-TopWrapper-Reset {
+      background-color: blue;
+    }
+
+    .Timer-BodyWrapper {
+      width: 500px;
+      height: 500px;
+      border: 3px solid white;
+      color: white;
+      font-size: 25px;
+      border-radius: 50%;
+      display: flex;
+      display: -webkit-flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .Timer-Record {
+      margin-left: 1rem;
+      background-color: blue;
+      border-radius: 10px;
+      width: 400px;
+      height: 500px;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    li {
+      list-style: none;
+      margin: 10px 0;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="TimerWrapper">
+    <div class ="Timer">
+      <div class="Timer-TopWrapper">
+        <button id ="lab" class="Timer-TopWrapper-LAB" onclick="saveRecordLog();">LAB</button>
+        <button id ="startStop" class="Timer-TopWrapper-StartStop" onclick="clickStartStop();">Start/Stop</button>
+        <button class="Timer-TopWrapper-Reset" onclick="resetTimer();">Reset</button>
+      </div>
+
+      <div class="Timer-BodyWrapper">
+        <div id ="currentTimer">00:00:00</div>
+      </div>
+    </div>
+
+    <div class ="Timer-Record">
+      <ul id ="recordList" class ="Timer-Record-List">
+
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const currentTimer = document.getElementById('currentTimer');
+    const startStop = document.getElementById('startStop');
+    const lab = document.getElementById('lab');
+    const recordList = document.getElementById('recordList');
+
+    let logIndex = 0;
+    let isStart = false;
+    let minutes = 0;
+    let seconds = 0;
+    let milliSeconds = 0;
+    let count = 0;
+
+    const resetTimer = () => {
+      minutes = 0;
+      seconds = 0;
+      milliSeconds = 0;
+      logIndex = 0;
+
+      recordList.innerHTML = '';
+      currentTimer.innerHTML = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}:${milliSeconds < 10 ? '0' + milliSeconds : milliSeconds}`;
+    }
+
+    const saveRecordLog = () => {
+      if (!minutes && !seconds && !milliSeconds) {
+        return;
+      }
+
+      logIndex++;
+      const logContent = `${logIndex}. ${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}:${milliSeconds < 10 ? '0' + milliSeconds : milliSeconds}`;
+      const liTag = document.createElement('li');
+      liTag.append(logContent);
+      recordList.append(liTag);
+    }
+    
+    const clickStartStop = () => {
+      isStart = !isStart;
+      count++;
+
+      const interval = setInterval(() => {
+        if (isStart) {
+          milliSeconds++;
+
+          if (milliSeconds >= 100) {
+            seconds++;
+            milliSeconds = 0;
+
+            if (seconds >= 60) {
+              seconds = 0;
+              minutes++;
+            }
+          }
+          currentTimer.innerHTML = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}:${milliSeconds < 10 ? '0' + milliSeconds : milliSeconds}`;
+        }
+      }, count < 2 ? 10 : 1000);
+    };
+  </script>
+</body>
+</html>
