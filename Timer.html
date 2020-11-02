@@ -110,7 +110,6 @@
 
     .RecordWrapper {
       margin-top: 10px;
-      background-color: blue;
       background-color: #ecf0f1;
       border-radius: 10px;
       width: 100%;
@@ -220,6 +219,7 @@
       let averageMinute = 0;
       let averageSecond = 0;
       let averageMilliSecond = 0;
+      let totalSum = 0;
 
       const childLength = recordList.children.length;
       const splitMinTime = recordList.children[0].innerHTML.split(":");
@@ -234,17 +234,17 @@
         averageMilliSecond += Number(splitTime[2]);
       }
 
-      total += (averageMilliSecond + averageSecond + averageMinute);
-      total /= childLength;
+      totalSum += (averageMilliSecond + averageSecond + averageMinute);
+      totalSum /= childLength;
 
       // 밀리세컨드에서 뺄때 임시 초 저장 변수
-      let tempSecond = parseInt(total / 100);
+      let tempSecond = parseInt(totalSum / 100);
 
-      averageMinute = parseInt(total / 6000);
+      averageMinute = parseInt(totalSum / 6000);
 
       // 분단위 되면 61초 62초 63초 이런식으로 늘어나서 60*분 만큼 초를 빼서 맞춤
-      averageSecond = (total / 100) <= 60 ? parseInt(total / 100) : parseInt(total / 100) - (60 * averageMinute);
-      averageMilliSecond = parseInt(total - (tempSecond * 100));
+      averageSecond = (totalSum / 100) <= 60 ? parseInt(totalSum / 100) : parseInt(totalSum / 100) - (60 * averageMinute);
+      averageMilliSecond = parseInt(totalSum - (tempSecond * 100));
 
       minRecord.innerHTML = `가장 적은 시간: ${splitMinTime[0]}분 ${splitMinTime[1]}초 ${splitMinTime[2]} 밀리세컨드`;
       maxRecord.innerHTML = `가장 큰시간: ${splitMaxTime[0]}분 ${splitMaxTime[1]}초 ${splitMaxTime[2]} 밀리세컨드`;
