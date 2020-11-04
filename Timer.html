@@ -158,6 +158,8 @@
     const maxRecord = document.getElementById('maxRecord');
     const averageRecord = document.getElementById('averageRecord');
 
+    let interval = null;
+
     document.addEventListener('keydown', (e) => {
       // 1번키 눌렀을때
       if (e.key === "1") {
@@ -170,12 +172,10 @@
       }
     }, true);
 
-    let logIndex = 0;
     let isStart = false;
     let minutes = 0;
     let seconds = 0;
     let milliSeconds = 0;
-    let count = 0;
 
     const saveRecordLog = () => {
       if (!minutes && !seconds && !milliSeconds) {
@@ -187,11 +187,9 @@
         return;
       }
 
-      logIndex++;
       const logContent = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}:${milliSeconds < 10 ? '0' + milliSeconds : milliSeconds}`;
       const liTag = document.createElement('li');
       liTag.append(logContent);
-      liTag.setAttribute('id', logIndex);
       recordList.append(liTag);
     }
 
@@ -203,7 +201,6 @@
       minutes = 0;
       seconds = 0;
       milliSeconds = 0;
-      logIndex = 0;
 
       currentTimer.innerHTML = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}:${milliSeconds < 10 ? '0' + milliSeconds : milliSeconds}`;
       resetRecordText();
@@ -253,15 +250,19 @@
     
     const clickStartStop = () => {
       isStart = !isStart;
-      count++;
 
       if (!isStart) {
-        calculateRecord();
+        clearInterval(interval);
+
+        // 콘솔 에러 방지
+        if (recordList.children.length > 0) {
+          calculateRecord();
+        }
       }
 
       else {
         resetRecordText();
-        const interval = setInterval(() => {
+        interval = setInterval(() => {
           if (isStart) {
             milliSeconds++;
 
@@ -276,7 +277,7 @@
             }
             currentTimer.innerHTML = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}:${milliSeconds < 10 ? '0' + milliSeconds : milliSeconds}`;
           }
-        }, count < 2 ? 10 : 1000);
+        }, 10);
       }
     };
   </script>
