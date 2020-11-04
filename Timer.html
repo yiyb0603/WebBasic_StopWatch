@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet" />
+  <link rel ="shortcut icon" href ="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSrpysPtT3PXlpznb9LU6zyUlukEGBl-SznJQ&usqp=CAU" />
   <title>Timer</title>
 
   <style>
@@ -68,7 +69,7 @@
     }
 
     .Timer-TopWrapper-LAB {
-      background-color: greenyellow;
+      background-color: #2ecc71;
     }
 
     .Timer-TopWrapper-StartStop {
@@ -113,6 +114,10 @@
       background-color: #ecf0f1;
       border-radius: 10px;
       width: 100%;
+      display: flex;
+      display: -webkit-flex;
+      flex-direction: column;
+      -ms-flex-direction: column;
       font-size: 20px;
       padding: 10px;
     }
@@ -141,6 +146,7 @@
       </div>
 
       <div class="RecordWrapper">
+        <div id ="description"></div>
         <div id ="minRecord">최솟값이 여기에 표시됩니다.</div>
         <div id ="maxRecord">최댓값이 여기에 표시됩니다.</div>
         <div id ="averageRecord">평균값이 여기에 표시됩니다.</div>
@@ -154,6 +160,7 @@
     const lab = document.getElementById('lab');
     const recordList = document.getElementById('recordList');
 
+    const description = document.getElementById('description');
     const minRecord = document.getElementById('minRecord');
     const maxRecord = document.getElementById('maxRecord');
     const averageRecord = document.getElementById('averageRecord');
@@ -210,6 +217,7 @@
       averageRecord.innerHTML = '';
       minRecord.innerHTML = '';
       maxRecord.innerHTML = '';
+      description.innerHTML = '정지 버튼을 누르면 계산된 기록이 보입니다.'
     }
 
     const calculateRecord = () => {
@@ -243,9 +251,9 @@
       averageSecond = (totalSum / 100) <= 60 ? parseInt(totalSum / 100) : parseInt(totalSum / 100) - (60 * averageMinute);
       averageMilliSecond = parseInt(totalSum - (tempSecond * 100));
 
-      minRecord.innerHTML = `가장 적은 시간: ${splitMinTime[0]}분 ${splitMinTime[1]}초 ${splitMinTime[2]} 밀리세컨드`;
-      maxRecord.innerHTML = `가장 큰시간: ${splitMaxTime[0]}분 ${splitMaxTime[1]}초 ${splitMaxTime[2]} 밀리세컨드`;
-      averageRecord.innerHTML = `평균 시간: ${averageMinute}분 ${averageSecond}초 ${averageMilliSecond} 밀리세컨드`;
+      minRecord.innerHTML = `가장 적은 시간: ${timeFormat(splitMinTime[0], splitMinTime[1], splitMinTime[2])}`;
+      maxRecord.innerHTML = `가장 큰시간: ${timeFormat(splitMaxTime[0], splitMaxTime[1], splitMaxTime[2])}`;
+      averageRecord.innerHTML = `평균 시간: ${timeFormat(averageMinute, averageSecond, averageMilliSecond)}`;
     }
     
     const clickStartStop = () => {
@@ -253,7 +261,7 @@
 
       if (!isStart) {
         clearInterval(interval);
-
+        description.innerHTML = '';
         // 콘솔 에러 방지
         if (recordList.children.length > 0) {
           calculateRecord();
@@ -280,6 +288,14 @@
         }, 10);
       }
     };
+
+    const timeFormat = (min, sec, milliSec) => {
+      const minutes = Number(min);
+      const seconds = Number(sec);
+      const milliSeconds = Number(milliSec);
+
+      return `${minutes > 0 && minutes < 10 ? '0' + minutes : minutes}분 ${seconds < 10 ? '0' + seconds : seconds}초 ${milliSeconds < 10 ? '0' + milliSeconds : milliSeconds} 밀리세컨드`;
+    }
   </script>
 </body>
 </html>
